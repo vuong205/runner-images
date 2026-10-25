@@ -1,231 +1,116 @@
-# GitHub Actions Runner Images
+# 🤖 Auto Sync Runner Images README
 
-**Table of Contents**
+Tự động đồng bộ file `README.md` từ repo [`actions/runner-images`](https://github.com/actions/runner-images) về repo này, kèm **commit message sinh bởi AI (Gemini)** mô tả nội dung thay đổi bằng tiếng Việt.
 
-- [About](#about)
-- [Available Images](#available-images)
-- [Announcements](#announcements)
-- [Image Definitions](#image-definitions)
-- [Image Releases](#image-releases)
-- [Software and Image Support](#software-and-image-support)
-- [How to Interact with the Repo](#how-to-interact-with-the-repo)
-- [FAQs](#faqs)
+---
 
-## About
+## 🎯 Tại sao cần theo dõi?
 
-This repository contains the source code used to create the VM images for [GitHub-hosted runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners) used for Actions, as well as for [Microsoft-hosted agents](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent) used for Azure Pipelines.
-To build a VM machine from this repo's source, see the [instructions](docs/create-image-and-azure-resources.md).
+GitHub Actions liên tục cập nhật và đổi tên các runner image — ví dụ `ubuntu-20.04` bị khai tử, `ubuntu-24.04` ra đời, hay `macos-14` thay thế `macos-13`. Những thay đổi này **không có thông báo chủ động**, và nếu bỏ sót, workflow ở các repo khác sẽ âm thầm chạy trên image lỗi thời hoặc thậm chí **bị fail hoàn toàn**.
 
-## Available Images
+> 💡 **Mục tiêu cốt lõi:** Phát hiện sớm khi tên image thay đổi → cập nhật kịp thời trong file `.yml` của các repo đang dùng — trước khi chúng bị ảnh hưởng.
 
-| Image | Architecture | YAML Label | Included Software |
-| --------------------|--------------|---------------------|------------------|
-| Ubuntu 26.04<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fubuntu26.json) | x64 | `ubuntu-26.04` | [ubuntu-26.04] |
-| Ubuntu 26.04 Arm64<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fubuntu26-arm64.json) | arm64 | `ubuntu-26.04-arm` | [ubuntu-26.04-arm64] |
-| Ubuntu 24.04<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fubuntu24.json) | x64 | `ubuntu-latest` or `ubuntu-24.04` | [ubuntu-24.04] |
-| Ubuntu 24.04 Arm64<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fubuntu24-arm64.json) | arm64 | `ubuntu-24.04-arm` | [ubuntu-24.04-arm64] |
-| Ubuntu 22.04<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fubuntu22.json) | x64 | `ubuntu-22.04` | [ubuntu-22.04] |
-| Ubuntu 22.04 Arm64<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fubuntu22-arm64.json) | arm64 | `ubuntu-22.04-arm` | [ubuntu-22.04-arm64] |
-| Ubuntu Slim<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fubuntu-slim.json) | x64 | `ubuntu-slim` | [ubuntu-slim] |
-| Xcode 27 [![preview](https://img.shields.io/badge/preview-0969DA?style=flat&logoColor=white)](https://github.com/actions/runner-images/issues/14404)<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fxcode-27-arm64.json) | arm64 | `xcode-27` or `xcode-27-xlarge` | [xcode-27] |
-| macOS 26<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fmacos-26.json) | x64 | `macos-latest-large`, `macos-26-intel`, `macos-26-large` | [macOS-26] |
-| macOS 26 Arm64<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fmacos-26-arm64.json) | arm64 | `macos-latest`, `macos-26` or `macos-26-xlarge` | [macOS-26-arm64] |
-| macOS 15<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fmacos-15.json) | x64 | `macos-15-large`, or `macos-15-intel` | [macOS-15] |
-| macOS 15 Arm64<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fmacos-15-arm64.json) | arm64 | `macos-15`, or `macos-15-xlarge` | [macOS-15-arm64] |
-| macOS 14 [![deprecated](https://img.shields.io/badge/deprecated-E5534B?style=flat&logoColor=white)](https://github.com/actions/runner-images/issues/13518)<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fmacos-14.json) | x64 | `macos-14-large` | [macOS-14] |
-| macOS 14 Arm64 [![deprecated](https://img.shields.io/badge/deprecated-E5534B?style=flat&logoColor=white)](https://github.com/actions/runner-images/issues/13518)<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fmacos-14-arm64.json) | arm64 | `macos-14` or `macos-14-xlarge` | [macOS-14-arm64] |
-| Windows Server 2025<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fwin25-vs2026.json) | x64 | `windows-latest`, `windows-2025`, or `windows-2025-vs2026` | [windows-2025-vs2026] |
-| Windows Server 2022<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fwin22.json) | x64 | `windows-2022` | [windows-2022] |
-| Windows 11 Arm64<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fwin11-arm64.json) | arm64 | `windows-11-arm` | [windows-11-arm64] |
-| Windows 11 Arm64 with Visual Studio 2026<br>![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fhosted-runners-images-bot%2F79267492faab096d04cdd25ce7014cec%2Fraw%2Fwin11-vs2026-arm64.json) | arm64 | `windows-11-vs2026-arm` | [windows-11-vs2026-arm64] |
+Repo này đóng vai trò **trạm quan sát**: mỗi khi `actions/runner-images` cập nhật danh sách image, thay đổi sẽ được kéo về, diff rõ ràng, và AI tóm tắt ngay bằng tiếng Việt để dễ theo dõi.
 
-### Label scheme
+---
 
-- In general the `-latest` label is used for the latest OS image version that is GA.
-- Before moving the `-latest` label to a new OS version we will announce the change and give sufficient lead time for users to update their workflows.
-- The `-xlarge` and `-large` suffixes are unique to macOS images and are only available for GitHub Actions. Learn more about [GitHub Actions larger runners](https://docs.github.com/en/actions/reference/runners/larger-runners#available-macos-larger-runners-and-labels).
+## ✨ Tính năng
 
-[ubuntu-26.04]: https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2604-Readme.md
-[ubuntu-26.04-arm64]: https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2604-Arm64-Readme.md
-[ubuntu-24.04]: https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md
-[ubuntu-24.04-arm64]: https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Arm64-Readme.md
-[ubuntu-22.04]: https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2204-Readme.md
-[ubuntu-22.04-arm64]: https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2204-Arm64-Readme.md
-[ubuntu-slim]: https://github.com/actions/runner-images/blob/main/images/ubuntu-slim/ubuntu-slim-Readme.md
-[windows-2025-vs2026]: https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-VS2026-Readme.md
-[windows-2022]: https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md
-[windows-11-arm64]: https://github.com/actions/runner-images/blob/main/images/windows/Windows11-Arm64-Readme.md
-[windows-11-vs2026-arm64]: https://github.com/actions/runner-images/blob/main/images/windows/Windows11-VS2026-Arm64-Readme.md
-[macOS-14]: https://github.com/actions/runner-images/blob/main/images/macos/macos-14-Readme.md
-[macOS-14-arm64]: https://github.com/actions/runner-images/blob/main/images/macos/macos-14-arm64-Readme.md
-[macOS-15]: https://github.com/actions/runner-images/blob/main/images/macos/macos-15-Readme.md
-[macOS-15-arm64]: https://github.com/actions/runner-images/blob/main/images/macos/macos-15-arm64-Readme.md
-[macOS-26]: https://github.com/actions/runner-images/blob/main/images/macos/macos-26-Readme.md
-[macOS-26-arm64]: https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md
-[xcode-27]: https://github.com/actions/runner-images/blob/main/images/macos/xcode-27-arm64-Readme.md
-[self-hosted runners]: https://help.github.com/en/actions/hosting-your-own-runners
+- 📥 **Tự động tải** `README.md` mới nhất từ `actions/runner-images` về thư mục `runner-images/`
+- 🔍 **Phát hiện thay đổi** — chỉ commit khi có nội dung mới, không commit thừa
+- 🧠 **Sinh commit message bằng AI** — phân tích git diff và mô tả thay đổi bằng tiếng Việt qua Gemini API
+- 🔄 **Fallback model tự động** — thử lần lượt nhiều model Gemini nếu model trước bị lỗi:
+  `gemini-flash-lite-latest` → `gemini-3.1-flash-lite` → `gemini-3.5-flash-lite` → `gemini-2.5-flash-lite`
+- 📡 **Fallback khi không có API key** — tự động lấy commit message gốc từ `actions/runner-images` qua GitHub public API
+- ⏱️ **Chạy định kỳ** mỗi 5 ngày một lần (hoặc chạy thủ công)
 
-## Announcements
+---
 
-See notable upcoming changes by viewing issues with the [Announcement](https://github.com/actions/runner-images/labels/Announcement) label.
+## ⚙️ Cách hoạt động
 
-## Image Definitions
+```
+Trigger (schedule / push / manual)
+        │
+        ▼
+Checkout repo
+        │
+        ▼
+curl → tải README.md từ actions/runner-images
+        │
+        ▼
+git status → có thay đổi?
+        │ Không → dừng
+        │ Có
+        ▼
+┌─────────────────────────────────────────┐
+│         Sinh commit message             │
+│                                         │
+│  Có GEMINI_API_KEY?                     │
+│    ├─ Có → git diff → gọi Gemini API   │
+│    │        (fallback qua nhiều model)  │
+│    │        → commit message tiếng Việt │
+│    │                                    │
+│    └─ Không → GitHub public API         │
+│               lấy commit gốc của        │
+│               actions/runner-images     │
+│               → "sync: <commit gốc>"   │
+│               (fallback: default msg)   │
+└─────────────────────────────────────────┘
+        │
+        ▼
+git commit + git push
+```
 
-### Beta
+---
 
-The purpose of a Beta is to collect feedback on an image before it is released to GA. The goal of a Beta is to identify and fix any potential issues that exist on that
-image. Images are updated on a weekly cadence. Any workflows that run on a beta image do not fall under the customer [SLA](https://github.com/customer-terms/github-online-services-sla) in place for Actions.
-Customers choosing to use Beta images are encouraged to provide feedback in the runner-images repo by creating an issue. A Beta may take on different availability, i.e. public vs private.
+## 🚀 Kích hoạt workflow
 
-### GA
+| Cách kích hoạt | Mô tả |
+|---|---|
+| ⏰ **Tự động** | Chạy lúc `00:00 UTC`, mỗi 5 ngày |
+| 📝 **Push** | Khi file `runner-images.yml` thay đổi |
+| 🖱️ **Thủ công** | GitHub → Actions → **Run workflow** |
 
-A GA (General Availability) image has been through a Beta period and is deemed ready for general use. Images are updated on a weekly cadence. In order to be moved to
-GA the image must meet the following criteria:
+---
 
-1. Has been through a Beta period (public or private)
-2. Most major software we install on the image has a compatible
-version for the underlying OS and
-3. All major bugs reported during the Beta period have been addressed.
+## 🔑 Cấu hình
 
-This image type falls under the customer [SLA](https://github.com/customer-terms/github-online-services-sla) for actions. GA images are eventually deprecated according to our guidelines as we only support the
-latest 2 versions of an OS.
+Thêm secret sau vào repo (**Settings → Secrets and variables → Actions**):
 
-#### Latest Migration Process
+| Secret | Mô tả |
+|---|---|
+| `GEMINI_API_KEY` | API key của Google Gemini (lấy tại [aistudio.google.com](https://aistudio.google.com/app/apikey)) |
 
-GitHub Actions and Azure DevOps use the `-latest` YAML label (ex: `ubuntu-latest`, `windows-latest`, and `macos-latest`). These labels point towards the newest stable OS version available.
+> **Không có API key vẫn hoạt động bình thường** — workflow sẽ tự lấy commit message từ repo gốc `actions/runner-images` qua GitHub public API (giới hạn ~60 req/giờ, không cần token).
 
-The `-latest` migration process is gradual and happens over 1-2 months in order to allow customers to adapt their workflows to the newest OS version. During this process, any workflow using the `-latest` label, may see changes in the OS version in their workflows or pipelines. To avoid unwanted migration, users can specify a specific OS version in the yaml file (ex: macos-14, windows-2022, ubuntu-22.04).
+---
 
-## Image Releases
+## 💬 Ví dụ commit message
 
-*How to best follow along with changes*
+| Trường hợp | Commit message |
+|---|---|
+| Có Gemini API | `Cập nhật thông tin phiên bản Ubuntu 24.04 và macOS 15` |
+| Không có API (lấy từ repo gốc) | `sync: Add macOS 15 Sequoia runner image` |
+| Fallback cuối cùng | `update runner-images/README.md` |
 
-1. Find the latest releases for this repository [here](https://github.com/actions/runner-images/releases).
-2. Subscribe to the releases coming out of this repository, instructions [here](https://docs.github.com/en/account-and-profile/managing-subscriptions-and-notifications-on-github/setting-up-notifications/configuring-notifications#configuring-your-watch-settings-for-an-individual-repository).
-3. Upcoming changes: A pre-release is created when the deployment of an image has started. As soon as the deployment is finished, the pre-release is converted to a release. If you have subscribed to releases, you will get notified of pre-releases as well.
+---
 
-   - You can also track upcoming changes using the [awaiting-deployment](https://github.com/actions/runner-images/labels/awaiting-deployment) label.
-4. For high impact changes, we will post these in advance to the GitHub Changelog on our [blog](https://github.blog/changelog/) and on [X](https://x.com/GHchangelog).
-   - Ex: breaking changes, GA or deprecation of images
+## 📁 Cấu trúc
 
-*Cadence*
+```
+.
+├── .github/
+│   └── workflows/
+│       └── runner-images.yml   # Workflow chính
+└── runner-images/
+    └── README.md               # File được đồng bộ tự động
+```
 
-- We typically deploy weekly updates to the software on the runner images.
+---
 
-## Software and Image Support
+## 📄 Nguồn dữ liệu
 
-### Support Policy
-
-- Tools and versions will typically be removed 6 months after they are deprecated or have reached end-of-life
-- We support (at maximum) 2 GA images and 1 beta image at a time. We begin the deprecation process of the oldest image label once the newest OS image label has been released to GA.
-- The images generally contain the latest versions of packages installed except for Ubuntu LTS where we mostly rely on the Canonical-provided repositories.
-
-- Popular tools can have several versions installed side-by-side with the following strategy:
-
-| Tool name | Installation strategy |
-|-----------|-----------------------|
-| Docker images | not more than 3 latest LTS OS\tool versions. New images or new versions of current images are added using the standard tool request process |
-| Java      | all LTS versions |
-| Node.js   | 3 latest LTS versions |
-| Go        | 3 latest minor versions |
-| Python <br/> Ruby | 5 most popular `major.minor` versions |
-| PyPy      | 3 most popular `major.minor` versions |
-| .NET Core | 2 latest LTS versions and 1 latest version. For each feature version only latest patch is installed. Note for [Ubuntu images see details.](./docs/dotnet-ubuntu.md) |
-| GCC <br/> GNU Fortran <br/> Clang <br/> GNU C++ | 3 latest major versions |
-| Android NDK | 1 latest non-LTS, 2 latest LTS versions |
-| Xcode     | - only one major version of Xcode will be supported per macOS version <br/> - all minor versions of the supported major version will be available <br/> - beta and RC versions will be provided "as-is" in the latest available macOS image only no matter of beta/GA status of the image <br/> - when a new patch version is released, the previous patch version will be replaced |
-| Xcode Platforms | - only three major.minor versions of platform tools and simulator runtimes will be available for installed Xcode, including beta/RC versions |
-
-### Package managers usage
-
-We use third-party package managers to install software during the image generation process. The table below lists the package managers and the software installed.
-> [!NOTE]
-> Third-party repositories are re-evaluated every year to identify if they are still useful and secure.
-
-| Operating system | Package manager                       | Third-party repos and packages |
-| :---             |        :---:                          |                           ---: |
-| Ubuntu           | [APT](https://wiki.debian.org/Apt)    | [docker](https://download.docker.com/linux/ubuntu) <br/> [Eclipse-Temurin (Adoptium)](https://packages.adoptium.net/artifactory/deb/) <br/> [Erlang](https://packages.erlang-solutions.com/ubuntu) <br/> [Firefox](https://ppa.launchpad.net/mozillateam/ppa/ubuntu) <br/> [git-lfs](https://packagecloud.io/install/repositories/github/git-lfs) <br/> [git](https://launchpad.net/~git-core/+archive/ubuntu/ppa) <br/> [Google Cloud CLI](https://packages.cloud.google.com/apt) <br/> [Heroku](https://cli-assets.heroku.com/channels/stable/apt) <br/> [HHvm](https://dl.hhvm.com/ubuntu) <br/> [MongoDB](https://repo.mongodb.org/apt/ubuntu) <br/> [Mono](https://download.mono-project.com/repo/ubuntu) <br/> [MS Edge](https://packages.microsoft.com/repos/edge) <br/> [PostgreSQL](https://apt.postgresql.org/pub/repos/apt/) <br/> [R](https://cloud.r-project.org/bin/linux/ubuntu)                                      |
-|                  | [pipx](https://pypa.github.io/pipx)   | ansible-core <br/>yamllint     |
-| Windows          | [Chocolatey](https://chocolatey.org)  | No third-party repos installed |
-| macOS            | [Homebrew](https://brew.sh)           | [aws-cli v2](https://github.com/aws/homebrew-tap) </br> [azure/bicep](https://github.com/Azure/homebrew-bicep) </br> [mongodb/brew](https://github.com/mongodb/homebrew-brew)                                                  |
-|                  | [pipx](https://pypa.github.io/pipx/)  | yamllint                       |
-
-### Image Deprecation Policy
-
-- Images begin the deprecation process of the oldest image label once a new GA OS version has been released.
-- Deprecation process begins with an announcement that sets a date for deprecation.
-- As it gets closer to the date, GitHub begins doing scheduled brownouts of the image.
-- During this time there will be an Announcement pinned in the repo to remind users of the deprecation.
-- Finally, GitHub will deprecate the image and it will no longer be available.
-
-### Preinstallation Policy
-
-In general, these are the guidelines we follow when deciding what to pre-install on our images:
-
-- Popularity: widely-used tools and ecosystems will be given priority.
-- Latest Technology: recent versions of tools will be given priority.
-- Deprecation: end-of-life tools and versions will not be added.
-- Licensing: MIT, Apache, or GNU licenses are allowed.
-- Time & Space on the Image: we will evaluate how much time is saved and how much space is used by having the tool pre-installed.
-- Support: If a tool requires the support of more than one version, we will consider the cost of this maintenance.
-
-### Default Version Update Policy
-
-- In general, once a new version is installed on the image, we announce the default version update 2 weeks prior to deploying it.
-- For potentially dangerous updates, we may extend the timeline up to 1 month between the announcement and deployment.
-
-## How to Interact with the Repo
-
-- **Issues**: To file a bug report, or request tools to be added/updated, please [open an issue using the appropriate template](https://github.com/actions/runner-images/issues/new/choose)
-- **Discussions**: If you want to share your thoughts about image configuration, installed software, or bring a new idea, please create a [new discussion](https://github.com/orgs/community/discussions/new?category=actions). Before making a new discussion, please make sure no similar topics were created earlier in the [actions category](https://github.com/orgs/community/discussions/categories/actions).
-- For general questions about using the runner images or writing your Actions workflow, please open requests in the [GitHub Community discussion Actions category](https://github.com/orgs/community/discussions/categories/actions).
-
-## FAQs
-
-<details>
-   <summary><b><i>What images are available for GitHub Actions and Azure DevOps?</b></i></summary>
-
-The availability of images for GitHub Actions and Azure DevOps is the same. However, deprecation policies may differ. See documentation for more details:
-
-- [GitHub Actions](https://docs.github.com/en/free-pro-team@latest/actions/reference/specifications-for-github-hosted-runners#supported-runners-and-hardware-resources)
-- [Azure DevOps](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software)
-
-</details>
-
-<details>
-   <summary><b><i>What image version is used in my build?</b></i></summary>
-
-Usually, image deployment takes 2-3 days, and documentation in the `main` branch is only updated when deployment is finished. To find out which image version and what software versions are used in a specific build, see `Set up job` (GitHub Actions) or `Initialize job` (Azure DevOps) step log.
-<img width="1440" alt="actions-runner-image" src="https://github.com/actions/runner-images/assets/88318005/922a8bf5-3e4d-4265-9527-b3b51e6bf9c8">
-</details>
-
-<details>
-   <summary><b><i>Looking for other Linux distributions?</b></i></summary>
-
-We do not plan to offer other Linux distributions. We recommend using Docker if you'd like to build using other distributions with the hosted runner images. Alternatively, you can leverage [self-hosted runners] and fully customize your VM image to your needs.
-</details>
-
-<details>
-   <summary><b><i>How do I contribute to the macOS source?</b></i></summary>
-
-macOS source lives in this repository and is available for everyone. However, macOS image-generation CI doesn't support external contributions yet so we are not able to accept pull-requests for now.
-
-We are in the process of preparing macOS CI to accept contributions. Until then, we appreciate your patience and ask you to continue to make tool requests by filing issues.
-</details>
-
-<details>
-   <summary><b><i>How does GitHub determine what tools are installed on the images?</b></i></summary>
-
-For some tools, we always install the latest at the time of the deployment; for others, we pin the tool to specific version(s). For more details please see the [Preinstallation Policy](#preinstallation-policy)
-</details>
-
-<details>
-   <summary><b><i>How do I request that a new tool be pre-installed on the image?</b></i></summary>
-Please create an issue and get an approval from us to add this tool to the image before creating the pull request.
-</details>
-
-<details>
-   <summary><b><i>What branch should I use to build custom image?</b></i></summary>
-We strongly encourage customers to build their own images using the main branch.
-This repository contains multiple branches and releases that serve as document milestones to reflect what software is installed in the images at certain point of time. Current builds are not idempotent and if one tries to build a runner image using the specific tag it is not guaranteed that the build will succeed.
-</details>
+File được tải từ:
+```
+https://raw.githubusercontent.com/actions/runner-images/refs/heads/main/README.md
+```
